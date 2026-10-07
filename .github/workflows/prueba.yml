@@ -1,0 +1,48 @@
+name: Compara_variables
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push
+  push:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "comparar-secrets-variables"
+  comparar-secrets-variables:
+    # The type of runner that the job will run on
+    runs-on: [self-hosted, windows, x64, tarea]
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+
+      # Runs a single command using the runners shell
+      - name: Comparar secrets con variables del sistema
+        shell: pwsh
+        env:
+          #Secrets de GitHub, con nombres distintos a las variables del sistema para evitar confusion
+          GH_DEV_TOKEN: ${{ secrets.DEV_TOKEN }}
+          GH_PROD_TOKEN: ${{ secrets.PROD_TOKEN }}
+        run:
+          #aqui se guarda en las variables local_dev y local_prod el valor de las variables del sistema mediante la función a la que le pasamos el nombre
+          #La variable fallos es un contador que si pasa de cero le indica a Github que el job ha fallado
+          #cada if compara ambas variables con sus secrets y muestra un mensaje si es correcto o sube fallos si falla
+          #al final comprobamos que si fallos es mayor a 0 que el job acabe con error
+          $local_dev = [Environment]::GetEnvironmentVariable("LOCAL_DEV_TOKEN", "Machine")
+          $local_prod = [Environment]::GetEnvironmentVariable("LOCAL_PROD_TOKEN", "Machine")
+          $fallos = 0
+
+          if ($env:GH_DEV_TOKEN -ceq $local_dev -and $local_dev) {
+            Write-Host "DEV_TOKEN coincide con LOCAL_DEV_TOKEN"
+          } else {
+            Write-Host "DEV_TOKEN NO coincide con LOCAL_DEV_TOKEN (o alguno está vacío)"
+            $fallos++
+          }
+
+          if ($env:GH_PROD_TOKEN -ceq $local_prod -and $local_prod) {
+            Write-Host "PROD_TOKEN coincide con LOCAL_PROD_TOKEN"
+          } else {
+            Write-Host "PROD_TOKEN NO coincide con LOCAL_PROD_TOKEN (o alguno está vacío)"
+            $fallos++
+          }
+
+          if ($fallos -gt 0) { exit 1 }
