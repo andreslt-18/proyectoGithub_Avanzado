@@ -17,7 +17,7 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Comparar secrets con variables del sistema
-        shell: pwsh
+        shell: powershell
         env:
           #Secrets de GitHub, con nombres distintos a las variables del sistema para evitar confusion
           GH_DEV_TOKEN: ${{ secrets.DEV_TOKEN }}
