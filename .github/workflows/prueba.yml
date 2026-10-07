@@ -22,13 +22,13 @@ jobs:
           #Secrets de GitHub, con nombres distintos a las variables del sistema para evitar confusion
           GH_DEV_TOKEN: ${{ secrets.DEV_TOKEN }}
           GH_PROD_TOKEN: ${{ secrets.PROD_TOKEN }}
-        run: 
+        run: |
           #aqui se guarda en las variables local_dev y local_prod el valor de las variables del sistema mediante la función a la que le pasamos el nombre
           #La variable fallos es un contador que si pasa de cero le indica a Github que el job ha fallado
           #cada if compara ambas variables con sus secrets y muestra un mensaje si es correcto o sube fallos si falla
           #al final comprobamos que si fallos es mayor a 0 que el job acabe con error
-          $local_dev = [Environment]::GetEnvironmentVariable("LOCAL_DEV_TOKEN", "Machine")
-          $local_prod = [Environment]::GetEnvironmentVariable("LOCAL_PROD_TOKEN", "Machine")
+          $local_dev = [Environment]::GetEnvironmentVariable("LOCAL_DEV_TOKEN", "Machine") 
+          $local_prod = [Environment]::GetEnvironmentVariable("LOCAL_PROD_TOKEN", "Machine") 
           $fallos = 0
 
           if ($env:GH_DEV_TOKEN -ceq $local_dev -and $local_dev) {
